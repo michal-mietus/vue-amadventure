@@ -2,11 +2,12 @@
   <div>
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link>
-    <span v-if="isLoggedIn == true">
+    <span v-if="isLoggedIn()">
       <span> | <a @click="logout">Logout</a></span>
     </span>
     <span v-else>
       <span> | <router-link to="/login">Login</router-link></span>
+      <span> | <router-link to="/register">Register</router-link></span>
     </span>
     <router-view/>
   </div>
@@ -39,6 +40,7 @@ template {
 a {
   font-weight: bold;
   color: #2c3e50;
+  text-decoration: underline;
   &.router-link-exact-active {
     color: #42b983;
   }
