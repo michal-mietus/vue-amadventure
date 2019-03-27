@@ -5,9 +5,10 @@ import axios from 'axios'
 Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
-  status: '',
+    url: 'http://localhost:8000/api/',
+    status: '',
     token: localStorage.getItem('token') || '',
-    user: {}
+    user: {},
   },
 
   mutations: {
@@ -31,14 +32,12 @@ export default new Vuex.Store({
   actions: {
     login({ commit }, user) {
       return new Promise((resolve, reject) => {
-        const url = 'http://localhost:8000/api/auth/obtain_token/';
         commit('auth_request')
-        axios({ url: url, data: user, method: 'POST' })
+        axios({ url: this.state.url + 'auth/obtain_token/', data: user, method: 'POST' })
           .then(resp => {
             const token = resp.data.token
             const user = resp.data.user
             localStorage.setItem('token', token)
-            // Add the following line:
             axios.defaults.headers.common['Authorization'] = token
             commit('auth_success', token, user)
             resolve(resp)
@@ -54,12 +53,13 @@ export default new Vuex.Store({
     register({ commit }, user) {
       return new Promise((resolve, reject) => {
         commit('auth_request')
-        axios({ url: 'http://localhost:3000/register', data: user, method: 'POST' })
+        axios({ url: this.state.url + 'auth/register/', data: user, method: 'POST' })
           .then(resp => {
             const token = resp.data.token
-            const user = resp.data.user
+            const username = resp.data.username
+            const password = resp.data.password
+            const user = { username, password }
             localStorage.setItem('token', token)
-            // Add the following line:
             axios.defaults.headers.common['Authorization'] = token
             commit('auth_success', token, user)
             resolve(resp)
