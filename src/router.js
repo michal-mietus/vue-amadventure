@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import store from './store.js'
 import Router from 'vue-router';
 import Home from './views/Home.vue';
 
@@ -34,6 +33,16 @@ export default new Router({
       path: '/resources',
       name: 'resources',
       component: () => import('./views/Resources.vue'),
+    },
+    {
+      path: '/hero/create',
+      name: 'hero/create',
+      component: () => import('./views/CreateHero.vue'),
+    },
+    {
+      path: '/hero/owned',
+      name: 'hero/owned',
+      component: () => import('./views/OwnedHero.vue'),
     },
   ],
 });
