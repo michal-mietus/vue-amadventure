@@ -27,6 +27,7 @@
           <label :for="statistic.name">{{ statistic.name | capitalize}}</label>
           <input :name="statistic.name" type="number" :min="statistic.points" :value="statistic.points"></input>
         </div>
+        <button type="submit" v-on:click="updateStatistics()">Update Statistics</button>
       </form>
     </div>
 
@@ -88,6 +89,10 @@ export default {
 
     pairAbilities: function () {
       pass;
+    },
+
+    updateStatistics: function () {
+
     },
   },
 
