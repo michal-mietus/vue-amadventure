@@ -22,18 +22,25 @@
 
     <!-- statistics form -->
     <div id="statistics-form" class="tab" v-if="statistics">
-      <form>
+      <form @submit.prevent="updateStatistics">
         <div v-for="statistic in statistics">
           <label :for="statistic.name">{{ statistic.name | capitalize}}</label>
-          <input :name="statistic.name" type="number" :min="statistic.points" :value="statistic.points"></input>
+          <input :name="statistic.name" type="number" v-bind:min="statistic.pointsCopy" v-model.number="statistic.points"></input>
         </div>
-        <button type="submit" v-on:click="updateStatistics()">Update Statistics</button>
+        <button type="submit">Update Statistics</button>
       </form>
     </div>
 
     <!-- abilities form -->
     <div id="abilities-form" class="tab">
-      <span v-for="ability in occupation_abilities">{{ ability.name | capitalize }} </span>
+      <form @submit.prevent="updateAbilities">
+        <div v-for="ability in pairedHeroAndOccupationAbilities">
+          <label :for="ability.occupationAbility.name">{{ ability.occupationAbility.name | capitalize }}</label>
+          <span></span>
+          <input :name="ability.occupationAbility.name" type="number" v-bind:min="ability.heroAbility.levelCopy" v-model.number="ability.heroAbility.level"></input>
+        </div>
+        <button type="submit">Update Abilities</button>
+      </form>
     </div>
   </div>
 </template>
@@ -41,7 +48,7 @@
 <script>
 export default {
   mounted () {
-    this.getHeroPrimaryData();
+    this.getHeroPrimaryDataAndPairAbilities();
     this.displayTab('statistics-form');
   },
 
@@ -49,36 +56,42 @@ export default {
     return {
       hero: null,
       statistics: [],
-      hero_abilities: [],
+      heroAbilities: [],
       occupation: {},
-      occupation_abilities: [],
+      occupationAbilities: [],
       errors: [],
+      pairedHeroAndOccupationAbilities: [], 
     };
   },
 
   methods: {
-    getHeroPrimaryData: function () {
+    getHeroPrimaryDataAndPairAbilities: function () {
       this.$http
         .get(`${this.$store.state.url}hero/owned/`)
         .then(response =>  {
           this.hero = response.data.hero;
-          this.statistics = response.data.statistics;
-          this.hero_abilities = response.data.abilities;
+          this.statistics = this.getStatisticsWithCopy(response.data.statistics);
+          this.heroAbilities = response.data.abilities;
           this.occupation = response.data.occupation;
           this.getOccupationAbilities(response.data.occupation.id);
         })
         .catch(error => (this.errors.push(error)))
     },
-
+    getStatisticsWithCopy: function (statistics) {
+      for (let i=0; i<statistics.length; i++) {
+        statistics[i].pointsCopy = statistics[i].points;
+      }
+      return statistics;
+    },
     getOccupationAbilities: function (occupation_id) {
       this.$http
         .get(`${this.$store.state.url}hero/occupation/${occupation_id}/ability/all/`)
         .then(response =>  {
-          this.occupation_abilities = response.data;
+          this.occupationAbilities = response.data;
+          this.pairAbilities();
         })
         .catch(error => (this.errors.push(error)))
     },
-
     displayTab: function(tabId) {
       let tabs = document.getElementsByClassName("tab");
       for (let i=0; i<tabs.length; i++){
@@ -86,12 +99,45 @@ export default {
       }
       document.getElementById(tabId).style.display = "block";
     },
-
     pairAbilities: function () {
-      pass;
+      let pairedHeroAndOccupationAbilities = [];
+      for (let heroAbility=0; heroAbility<this.heroAbilities.length; heroAbility++){
+        for (let ability=0; ability<this.occupationAbilities.length; ability++){
+          if (this.heroAbilities[heroAbility].ability == this.occupationAbilities[ability].id){
+            let heroAbilityWithCopyLevels = this.heroAbilities[heroAbility];
+            heroAbilityWithCopyLevels.levelCopy = heroAbilityWithCopyLevels.level; 
+            let pairedHeroAndOccupationAbilitiesObjects = {
+              heroAbility: this.heroAbilities[heroAbility],
+              occupationAbility: this.occupationAbilities[ability]
+            };
+            pairedHeroAndOccupationAbilities.push(pairedHeroAndOccupationAbilitiesObjects);
+          }
+        }
+      }
+      this.pairedHeroAndOccupationAbilities = pairedHeroAndOccupationAbilities;
     },
-
     updateStatistics: function () {
+      this.checkStatisticsForm();
+      if (this.errors == 0) { // don't knwo why comparing to empty list returns false but to 0 is true...
+        this.sendStatisticsToApi();
+      };
+    },
+    checkStatisticsForm: function () {
+      this.errors = [];
+      for (let statistic=0; statistic<this.statistics.length; statistic++){
+        if(this.statistics[statistic].points < this.statistics[statistic].pointsCopy){
+          let error = 'You can\'t decrease your statistics.';
+          this.errors.push(error);
+        }
+      };
+    },
+    sendStatisticsToApi: function () {
+      console.log('sending');
+    },
+    updateAbilities: function () {
+      this.checkAbilitiesForm();
+    },
+    checkAbilitiesForm: function () {
 
     },
   },
