@@ -3,24 +3,35 @@
     <div v-if="errors" class="errors">
       <span v-for="error in errors">{{ error }}</span>
     </div>
+
+    <!-- hero details -->
     <div v-if="hero" class="hero-details">
       <span>Name: {{ hero.name }} </span>
       <span>Occupation: {{ occupation.name }}</span>
     </div>
 
+    <!-- tabs bar -->
     <div class="bar">
-      <div class="bar-item" v-on:click="displayTab('statistics')">
+      <div class="bar-item" v-on:click="displayTab('statistics-form')">
         <h4>Statistics</h4>
       </div>
-      <div class="bar-item" v-on:click="displayTab('abilities')">
+      <div class="bar-item" v-on:click="displayTab('abilities-form')">
         <h4>Abilities</h4>
       </div>
     </div>
 
-    <div id="statistics" class="tab" v-if="statistics">
-      <span v-for="statistic in statistics">{{ statistic.name | capitalize }} {{ statistic.points }}</span>
+    <!-- statistics form -->
+    <div id="statistics-form" class="tab" v-if="statistics">
+      <form>
+        <div v-for="statistic in statistics">
+          <label :for="statistic.name">{{ statistic.name | capitalize}}</label>
+          <input :name="statistic.name" type="number" :min="statistic.points" :value="statistic.points"></input>
+        </div>
+      </form>
     </div>
-    <div id="abilities" class="tab">
+
+    <!-- abilities form -->
+    <div id="abilities-form" class="tab">
       <span v-for="ability in occupation_abilities">{{ ability.name | capitalize }} </span>
     </div>
   </div>
@@ -30,7 +41,7 @@
 export default {
   mounted () {
     this.getHeroPrimaryData();
-    this.displayTab('statistics');
+    this.displayTab('statistics-form');
   },
 
   data () {
