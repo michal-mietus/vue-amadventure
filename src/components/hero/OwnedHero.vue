@@ -23,21 +23,11 @@
     <!-- statistics form -->
     <div id="statistics-form" class="tab" v-if="statistics">
       <h4>Points to use: {{ hero.statistic_points }}</h4>
-      <form @submit.prevent="updateStatistics">
+      <!--<form @submit.prevent="updateStatistics">-->
         <div v-for="statistic in statistics">
-          <label :for="statistic.name">{{ statistic.name | capitalize}}</label>
-          <input
-            type="number"
-            :min="statistic.pointsCopy"
-            v-model.number="statistic.points"
-            :name="statistic.name"
-            
-            disabled
-            >
-          <!--@change="calculateStatisticPoints"-->
-          </input>
-          <div id="" class="decrease-statistic" @click="increaseHeroStatisticPoints($event)">-</div>
-          <div class="increase-statistic" @click="decreaseHeroStatisticPoints($event)">+</div>
+          <span>{{ statistic.name | capitalize}}: {{ statistic.points }}</span>
+          <span :class="'decrease-statistic ' + statistic.name" @click="decreaseHeroStatisticPoints($event)">-</span>
+          <span :class="'increase-statistic ' + statistic.name" @click="increaseHeroStatisticPoints($event)">+</span>
         </div>
         <button type="submit">Update Statistics</button>
       </form>
@@ -170,22 +160,21 @@ export default {
     checkAbilitiesForm: function () {
 
     },
-    /*
-    calculateStatisticPoints: function (event) {
-      let statisticName = event.explicitOriginalTarget.attributes.name.value;
+    increaseHeroStatisticPoints: function (event) {
+      let classes = event.srcElement.className.split(' ');
       for (let i=0; i<this.statistics.length; i++){
-        if (this.statistics[i].name == statisticName) {
-          let usedPoints = this.statistics[i].points - this.statistics[i].pointsCopy;
-          console.log()
-          this.hero.statistic_points -= usedPoints;
+        if (classes.includes(this.statistics[i].name)) {
+          this.statistics[i].points += 1;
         };
       };
-    },*/
-    increaseHeroStatisticPoints: function (event) {
-      console.log(event);
     },
     decreaseHeroStatisticPoints: function (event) {
-      console.log(event);
+      let classes = event.srcElement.className.split(' ');
+      for (let i=0; i<this.statistics.length; i++){
+        if (classes.includes(this.statistics[i].name)) {
+          this.statistics[i].points -= 1;
+        };
+      };
     },
     calculateAbilityPoints: function (event) {
 
@@ -207,9 +196,8 @@ export default {
   margin: 40px 0 0 0;
 }
 
-#statistics span, #abilities span {
-  padding: 5px;
-  display: block;
+#statistics-form span, #abilities-form span {
+  padding: 8px 4px;
 }
 
 .hero-details span {
