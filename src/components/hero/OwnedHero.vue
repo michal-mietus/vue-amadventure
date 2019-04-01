@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="hero">
     <div v-if="errors" class="errors">
       <span v-for="error in errors">{{ error }}</span>
     </div>
@@ -22,22 +22,40 @@
 
     <!-- statistics form -->
     <div id="statistics-form" class="tab" v-if="statistics">
+      <h4>Points to use: {{ hero.statistic_points }}</h4>
       <form @submit.prevent="updateStatistics">
         <div v-for="statistic in statistics">
           <label :for="statistic.name">{{ statistic.name | capitalize}}</label>
-          <input :name="statistic.name" type="number" v-bind:min="statistic.pointsCopy" v-model.number="statistic.points"></input>
+          <input
+            type="number"
+            :min="statistic.pointsCopy"
+            v-model.number="statistic.points"
+            :name="statistic.name"
+            
+            disabled
+            >
+          <!--@change="calculateStatisticPoints"-->
+          </input>
+          <div id="" class="decrease-statistic" @click="increaseHeroStatisticPoints($event)">-</div>
+          <div class="increase-statistic" @click="decreaseHeroStatisticPoints($event)">+</div>
         </div>
         <button type="submit">Update Statistics</button>
       </form>
     </div>
 
     <!-- abilities form -->
-    <div id="abilities-form" class="tab">
+    <div id="abilities-form" class="tab" v-if="pairedHeroAndOccupationAbilities">
+      <h4>Points to use: {{ hero.ability_points }}</h4>
       <form @submit.prevent="updateAbilities">
         <div v-for="ability in pairedHeroAndOccupationAbilities">
           <label :for="ability.occupationAbility.name">{{ ability.occupationAbility.name | capitalize }}</label>
           <span></span>
-          <input :name="ability.occupationAbility.name" type="number" v-bind:min="ability.heroAbility.levelCopy" v-model.number="ability.heroAbility.level"></input>
+          <input
+            type="number" 
+            :name="ability.occupationAbility.name" 
+            v-bind:min="ability.heroAbility.levelCopy" 
+            v-model.number="ability.heroAbility.level">
+          </input>
         </div>
         <button type="submit">Update Abilities</button>
       </form>
@@ -49,7 +67,6 @@
 export default {
   mounted () {
     this.getHeroPrimaryDataAndPairAbilities();
-    this.displayTab('statistics-form');
   },
 
   data () {
@@ -115,10 +132,12 @@ export default {
         }
       }
       this.pairedHeroAndOccupationAbilities = pairedHeroAndOccupationAbilities;
+      // Display first view 
+      this.displayTab('statistics-form');
     },
     updateStatistics: function () {
       this.checkStatisticsForm();
-      if (this.errors == 0) { // don't knwo why comparing to empty list returns false but to 0 is true...
+      if (this.errors == 0) {
         this.sendStatisticsToApi();
       };
     },
@@ -132,12 +151,43 @@ export default {
       };
     },
     sendStatisticsToApi: function () {
-      console.log('sending');
+      let statistics = this.deletePointsCopies();
+      this.$http
+        .post(`${this.$store.state.url}hero/statistic/all/upgrade/`, {statistics})
+        .then(response => (this.$router.push('/hero/owned')))
+        .catch(error => (this.errors.push(error)))
+    },
+    deletePointsCopies: function () {
+      let statistics = this.statistics;
+      for (let i=0; i<statistics.length; i++) {
+        delete statistics[i].pointsCopy;
+      };
+      return statistics;
     },
     updateAbilities: function () {
       this.checkAbilitiesForm();
     },
     checkAbilitiesForm: function () {
+
+    },
+    /*
+    calculateStatisticPoints: function (event) {
+      let statisticName = event.explicitOriginalTarget.attributes.name.value;
+      for (let i=0; i<this.statistics.length; i++){
+        if (this.statistics[i].name == statisticName) {
+          let usedPoints = this.statistics[i].points - this.statistics[i].pointsCopy;
+          console.log()
+          this.hero.statistic_points -= usedPoints;
+        };
+      };
+    },*/
+    increaseHeroStatisticPoints: function (event) {
+      console.log(event);
+    },
+    decreaseHeroStatisticPoints: function (event) {
+      console.log(event);
+    },
+    calculateAbilityPoints: function (event) {
 
     },
   },
