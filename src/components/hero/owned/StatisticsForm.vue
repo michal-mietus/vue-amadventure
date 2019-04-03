@@ -1,6 +1,9 @@
 <template>
   <!-- statistics form -->
     <div id="statistics-form" class="tab" v-if="statistics">
+      <div class="success" v-if="success">
+        <span>{{ success }}</span>
+      </div>
       <h4>Points to use: {{ hero.statistic_points }}</h4>
       <!--<form @submit.prevent="updateStatistics">-->
         <div v-for="statistic in statistics">
@@ -22,6 +25,7 @@ export default {
     return {
       statistics: null,
       hero: null,
+      success: null,
     };
   },
   methods: {
@@ -64,8 +68,14 @@ export default {
       let statistics = this.deletePointsCopies();
       this.$http
         .post(`${this.$store.state.url}hero/statistic/all/upgrade/`, {statistics})
-        .then(response => (this.$router.push('/hero/owned')))
+        .then(response => (this.successfullyUpgraded()))
         .catch(error => (this.errors.push(error)))
+    },
+    successfullyUpgraded: function (response) {
+      this.success = 'Your hero has been upgraded.';
+      this.$router.push('/hero/owned');
+      // TODO after updating hero, memory is not cleaned and levels copies are deleted,
+      // this allows user to decreasing their abilities
     },
     deletePointsCopies: function () {
       let statistics = this.statistics;
@@ -84,3 +94,9 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped> 
+.success {
+  color: green;
+  font-weight: bold;
+}
+</style>
