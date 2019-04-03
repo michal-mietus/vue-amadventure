@@ -36,7 +36,9 @@ export default {
   mounted () {
     this.getHeroPrimaryDataAndPairAbilities();
   },
-
+  ready () {
+    this.displayTab('statistics-form');
+  },
   data () {
     return {
       hero: null,
@@ -62,8 +64,8 @@ export default {
     getDataToAbilitiesComponent: function () {
       let hero = this.hero;
       let heroAbilities = this.heroAbilities;
-      let occupationAbilities = this.occupationAbilities;
-      return { hero, heroAbilities, occupationAbilities }
+      let occupation = this.occupation;
+      return { hero, heroAbilities, occupation }
     },
     getHeroPrimaryDataAndPairAbilities: function () {
       this.$http
@@ -73,7 +75,6 @@ export default {
           this.statistics = this.getStatisticsWithCopy(response.data.statistics);
           this.heroAbilities = response.data.abilities;
           this.occupation = response.data.occupation;
-          this.getOccupationAbilities(response.data.occupation.id);
         })
         .catch(error => (this.errors.push(error)))
     },
@@ -83,15 +84,7 @@ export default {
       }
       return statistics;
     },
-    getOccupationAbilities: function (occupation_id) {
-      this.$http
-        .get(`${this.$store.state.url}hero/occupation/${occupation_id}/ability/all/`)
-        .then(response =>  {
-          this.occupationAbilities = response.data;
-          this.displayTab('statistics-form');
-        })
-        .catch(error => (this.errors.push(error)))
-    },
+    
     displayTab: function(componentRef) {
       let tabs = document.getElementsByClassName("tab");
       for (let i=0; i<tabs.length; i++){
