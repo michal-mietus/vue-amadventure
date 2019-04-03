@@ -21,7 +21,7 @@ export default {
       this.occupation = this.$attrs.parentData.occupation;
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>

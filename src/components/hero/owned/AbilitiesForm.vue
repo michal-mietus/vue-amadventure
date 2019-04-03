@@ -1,16 +1,14 @@
 <template>
   <div id="abilities-form" class="tab" v-if="pairedHeroAndOccupationAbilities && hero">
+    <div class="errors" v-if="errors">
+      <span v-for="error in errors">{{ error }}</span>
+    </div>
     <h4>Points to use: {{ hero.ability_points }}</h4>
     <form @submit.prevent="updateAbilities">
       <div v-for="ability in pairedHeroAndOccupationAbilities">
-        <label :for="ability.occupationAbility.name">{{ ability.occupationAbility.name | capitalize }}</label>
-        <span></span>
-        <input
-          type="number" 
-          :name="ability.occupationAbility.name" 
-          v-bind:min="ability.heroAbility.levelCopy" 
-          v-model.number="ability.heroAbility.level">
-        </input>
+        <span>{{ ability.occupationAbility.name | capitalize}}: {{ ability.heroAbility.level }}</span>
+        <span :class="'decrease-ability ' + ability.occupationAbility.id" @click="decreaseHeroAbilityPoints($event)">-</span>
+        <span :class="'increase-ability ' + ability.occupationAbility.id" @click="increaseHeroAbilityPoints($event)">+</span>
       </div>
       <button type="submit">Update Abilities</button>
     </form>
@@ -19,23 +17,33 @@
 
 <script>
 export default {
-  mounted () {
+  mounted() {
     this.unpackData();
-    this.pairHeroAndOccupationAbilities();
   },
-  data () {
+  data() {
     return {
       hero: null,
       heroAbilities: [],
       occupationAbilities: [],
       pairedHeroAndOccupationAbilities: [],
+      errors: [],
     };
   },
   methods: {
     unpackData: function () {
       this.hero = this.$attrs.parentData.hero;
       this.heroAbilities = this.$attrs.parentData.heroAbilities;
-      this.occupationAbilities = this.$attrs.parentData.occupationAbilities;
+      let occupation = this.$attrs.parentData.occupation;
+      this.occupationAbilities = this.getOccupationAbilities(occupation.id);
+    },
+    getOccupationAbilities: function (occupation_id) {
+      this.$http
+        .get(`${this.$store.state.url}hero/occupation/${occupation_id}/ability/all/`)
+        .then(response =>  {
+          this.occupationAbilities = response.data;
+          this.pairHeroAndOccupationAbilities();
+        })
+        .catch(error => (this.errors.push(error)))
     },
     pairHeroAndOccupationAbilities: function () {
       let pairedHeroAndOccupationAbilities = [];
@@ -54,7 +62,36 @@ export default {
       }
       this.pairedHeroAndOccupationAbilities = pairedHeroAndOccupationAbilities;
     },
+    increaseHeroAbilityPoints: function (event) {
+      let classes = event.srcElement.className.split(' ');
+      if (this.hero.ability_points > 0 ){
+        for (let i=0; i<this.heroAbilities.length; i++){
+          if (classes.includes(this.heroAbilities[i].ability.toString())) {
+            this.heroAbilities[i].level += 1;
+            this.hero.ability_points -= 1;
+          };
+        };
+      };
+    },
+    decreaseHeroAbilityPoints: function (event) {
+      let classes = event.srcElement.className.split(' ');
+      for (let i=0; i<this.heroAbilities.length; i++){
+        if (classes.includes(this.heroAbilities[i].ability.toString())) {
+          let abilityLevel = this.heroAbilities[i].level - 1
+          if (abilityLevel < this.heroAbilities[i].levelCopy){
+            let error = 'You can\'t decrease your ability level.'
+            if (!this.errors.includes(error)) {
+              this.errors.push(error);
+            } 
+          } else {
+            this.heroAbilities[i].level = abilityLevel;
+            this.hero.ability_points += 1;
+          };
+        };
+      };
+    },
   },
+
   filters: {
     capitalize: function (value) {
       if (!value) return '';
@@ -64,3 +101,9 @@ export default {
   },
 }
 </script>
+<style lang="scss" scoped>
+.errors {
+  color: red;
+  font-weight: bold;
+}
+</style>
