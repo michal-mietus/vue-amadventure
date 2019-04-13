@@ -6,6 +6,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     url: 'http://localhost:8000/api/',
+    nodeUrl: 'http://localhost:3000/',
     status: '',
     token: localStorage.getItem('token') || '',
     user: {},
@@ -79,6 +80,11 @@ export default new Vuex.Store({
         localStorage.removeItem('token');
         delete axios.defaults.headers.common.Authorization;
         resolve();
+      });
+    },
+    unathorizedAccess({ path }) {
+      return new Promise((resolve, reject) => {
+        this.$router.push(path);
       });
     },
   },
