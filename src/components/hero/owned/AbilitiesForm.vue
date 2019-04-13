@@ -1,5 +1,8 @@
 <template>
   <div id="abilities-form" class="tab" v-if="pairedHeroAndOccupationAbilities && hero">
+    <div class="success" v-if="success">
+      <span>{{ success }}</span>
+    </div>
     <div class="errors" v-if="errors">
       <span v-for="error in errors">{{ error }}</span>
     </div>
@@ -27,6 +30,7 @@ export default {
       occupationAbilities: [],
       pairedHeroAndOccupationAbilities: [],
       errors: [],
+      success: null,
     };
   },
   methods: {
@@ -90,6 +94,27 @@ export default {
         };
       };
     },
+    updateAbilities: function () {
+      let heroAbilityPoints = this.hero.ability_points;
+      // passed reference not a cloned array 
+      let abilities = this.removeLevelCopiesFromAbilities(this.heroAbilities); 
+      this.$http
+        .post(`${this.$store.state.url}hero/ability/all/upgrade/`, { abilities, heroAbilityPoints }) // TODO unfinished
+        .then(response => this.successfullyUpgraded())
+        .catch(error => this.errors.push(error))
+    },
+    removeLevelCopiesFromAbilities: function (abilities) {
+      for (let i=0; i<abilities.length; i++){
+        delete abilities[i].levelCopy;
+      };
+      return abilities;
+    },
+    successfullyUpgraded: function (response) {
+      this.success = 'Your hero has been upgraded.';
+      this.$router.push('/hero/owned');
+      // TODO after updating hero, memory is not cleaned and levels copies are deleted,
+      // this allows user to decreasing their abilities
+    },
   },
 
   filters: {
@@ -104,6 +129,11 @@ export default {
 <style lang="scss" scoped>
 .errors {
   color: red;
+  font-weight: bold;
+}
+
+.success {
+  color: green;
   font-weight: bold;
 }
 </style>

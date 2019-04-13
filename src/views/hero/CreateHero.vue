@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import CreateHero from '../components/hero/CreateHero.vue';
+import CreateHero from '@/components/hero/CreateHero.vue';
 
 export default {
   components: {

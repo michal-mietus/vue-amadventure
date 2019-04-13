@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import OwnedHero from '../components/hero/OwnedHero.vue';
+import OwnedHero from '@/components/hero/OwnedHero.vue';
 
 export default {
   components: {

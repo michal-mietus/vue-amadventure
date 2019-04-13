@@ -12,6 +12,12 @@ export default {
     Navigation,
   },
 
+  created () {
+    if (!this.$store.state.isLoggedIn && this.$router.path !== '/login') {
+      this.$store.dispatch('unathorizedAccess', {path: '/login'})
+    }
+  },
+
   methods: {
     isLoggedIn: function () {
       return this.$store.getters.isLoggedIn;
