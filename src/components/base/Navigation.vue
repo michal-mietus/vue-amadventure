@@ -1,7 +1,9 @@
 <template>
   <div>
     <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+    <router-link to="/about">About</router-link> |
+    <router-link to="/hero/owned">Hero</router-link> |
+    <router-link to="/expedition">Expedition</router-link>
     <span v-if="isLoggedIn()">
       <span> | <a @click="logout">Logout</a></span>
     </span>
