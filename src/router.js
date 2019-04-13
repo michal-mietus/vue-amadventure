@@ -22,12 +22,12 @@ export default new Router({
     {
       path: '/register',
       name: 'register',
-      component: () => import('./views/Register.vue'),
+      component: () => import('./views/user/Register.vue'),
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('./views/Login.vue'),
+      component: () => import('./views/user/Login.vue'),
     },
     {
       path: '/resources',
@@ -37,12 +37,22 @@ export default new Router({
     {
       path: '/hero/create',
       name: 'hero/create',
-      component: () => import('./views/CreateHero.vue'),
+      component: () => import('./views/hero/CreateHero.vue'),
     },
     {
       path: '/hero/owned',
       name: 'hero/owned',
-      component: () => import('./views/OwnedHero.vue'),
+      component: () => import('./views/hero/OwnedHero.vue'),
+    },
+    {
+      path: '/expedition',
+      name: 'expedition',
+      component: () => import('./views/artifical/LocationListView.vue'),
+    },
+    {
+      path: '/fight',
+      name: 'fight',
+      component: () => import('./views/fight/Fight.vue'),
     },
   ],
 });
