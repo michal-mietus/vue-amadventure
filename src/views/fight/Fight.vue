@@ -6,7 +6,7 @@
       <FighterInfoComponent :data="mobData" class="fighter border"/>
     </div>
     <div class="abilities-container border">
-      <AbilityComponent v-for="ability in abilities" :ability="ability" class="ability"/>
+      <AbilityComponent v-for="ability in abilities" :ability="ability" class="ability" />
     </div>
   </div>
 </template>
