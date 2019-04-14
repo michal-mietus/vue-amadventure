@@ -1,10 +1,10 @@
 <template>
   <div>
     <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link> |
-    <router-link to="/hero/owned">Hero</router-link> |
-    <router-link to="/expedition">Expedition</router-link>
+    <router-link to="/about">About</router-link> 
     <span v-if="isLoggedIn()">
+      | <router-link to="/hero/owned">Hero</router-link> 
+      | <router-link to="/expedition">Expedition</router-link>
       <span> | <a @click="logout">Logout</a></span>
     </span>
     <span v-else>
