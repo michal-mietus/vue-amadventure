@@ -1,19 +1,32 @@
 <template>
-  <div>
-    <h2>Fight</h2>
-    <div class="info-container">
-      <FighterInfoComponent :data="heroData" class="fighter border"/>
-      <FighterInfoComponent :data="mobData" class="fighter border"/>
+  <div v-if="areFighting()">
+    <div>
+      <h2>Fight</h2>
+      <div class="info-container">
+        <FighterInfoComponent :fighter="fightingHero" class="fighter border"/>
+        <FighterInfoComponent :fighter="fightingMob" class="fighter border"/>
+      </div>
+      <div class="border" @click="attack">
+        Attack
+      </div>
+      <div class="abilities-container border">
+        <h3>Abilities</h3>
+        <AbilityComponent v-for="ability in abilities" :ability="ability" class="ability" />
+      </div>
     </div>
-    <div class="abilities-container border">
-      <AbilityComponent v-for="ability in abilities" :ability="ability" class="ability" />
+    <div>
+
     </div>
+  </div>
+  <div v-else-if="winner">
+    <p>{{ this.winner.additionalText }} </p>
   </div>
 </template>
 
 <script>
 import FighterInfoComponent from '@/components/fight/FighterInfoComponent.vue';
 import AbilityComponent from '@/components/fight/AbilityComponent.vue';
+
 
 export default {
   components: {
@@ -23,35 +36,42 @@ export default {
 
   data () {
     return {
-      heroData: null,
-      mobData: null,
+      fightingHero: null,
+      fightingMob: null,
       abilities: null,
+      winner: null,
     };
+  },
+
+  mounted() {
+    this.getData();
   },
 
   // socket keys are socket emits names 
   sockets: {
-    returnedData: function (data) {
-      console.log('Returned data', data);
-      console.log(this.heroData);
-      this.mobData = {
-        object: data.mob,
-        fightingMob: data.fighting_mob,
-        statistics: data.fighting_mob_statistics,
-      }
-      
-      this.heroData = {
-        object: data.hero,
-        abilities: data.hero_abilities,
-        statistics: data.hero_statistics,
-      };
-
+    getData: function (data) {
+      this.fightingHero = data.fightingHero;
+      this.fightingMob = data.fightingMob;
       this.abilities = data.abilities;
     },
-  },
-  
-  mounted() {
-    this.getData();
+
+    fightersChanged: function ({ hero, mob }) {
+      this.fightingHero = hero;
+      this.fightingMob = mob;
+      console.log(hero, mob);
+    },
+
+    fightResult: function ({ hero, mob, winner }){
+      this.fightingHero = null;
+      this.fightingMob = null;
+      if (winner == 'hero') {
+        this.winner = hero;
+        this.winner.additionalText = 'You won!'
+      } else {
+        this.winner = mob;
+        this.winner.additionalText = 'You lose.'
+      }
+    },
   },
 
   methods: {
@@ -59,6 +79,13 @@ export default {
       const locationId = this.$route.params.locationId;
       const token = this.$store.state.token;
       this.$socket.emit('getData', { token, locationId });
+    },
+    attack: function () {
+      this.$socket.emit('attack');
+    },
+
+    areFighting: function () {
+      return this.fightingHero && this.fightingMob;
     },
   },
 };
