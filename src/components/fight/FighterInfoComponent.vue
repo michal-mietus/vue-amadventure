@@ -1,10 +1,16 @@
 <template>
-  <div v-if="data" class="container">
-    <p v-if="data.object" class="name">
-      {{ data.object.name}}
+  <div v-if="fighter" class="container">
+    <p v-if="fighter.info" class="name">
+      {{ fighter.info.name}}
     </p>
-    <div v-for="statistic in data.statistics" class="statistic">
+    <div v-for="statistic in fighter.mainStatistics" class="statistic">
       <p>{{ statistic.name }}: {{ statistic.points}}</p>
+    </div>
+    <div v-if="fighter.derivativeStatistics" class="statistic">
+      <p>Damage: {{ fighter.derivativeStatistics.damage }}</p>
+      <p>Critic chance: {{ fighter.derivativeStatistics.critic_chance }}%</p>
+      <p>Mana: {{ fighter.derivativeStatistics.mana }}</p>
+      <p>Health points: {{ fighter.derivativeStatistics.health_points }}</p>
     </div>
   </div>
 </template>
@@ -14,7 +20,7 @@
 export default {
   // socket keys are socket emits names
   props: {
-    data: {
+    fighter: {
       type: null,
     },
   },
@@ -24,7 +30,7 @@ export default {
   },
   
   mounted() {
-    
+
   },
   methods: {
 
