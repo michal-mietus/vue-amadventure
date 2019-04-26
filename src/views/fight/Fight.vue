@@ -47,6 +47,13 @@ export default {
     this.getData();
   },
 
+  beforeRouteLeave (to, from, next) {
+    if (!this.winner){
+      this.$socket.emit('userLeaveFight');
+    }
+    next();
+  },
+
   // socket keys are socket emits names 
   sockets: {
     getData: function (data) {
