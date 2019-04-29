@@ -3,7 +3,7 @@
     <h2>Register</h2>
     <form @submit.prevent="register">
       <div v-if="errors" class="errors">
-        <span v-for="error in errors">
+        <span v-for="error in errors" :key="error">
           {{ error }}
         </span>
       </div>
@@ -30,42 +30,42 @@
   </div>
 </template>
 <script>
-  export default {
-  data() {
-    return {
-      name: "",
-      email: "",
-      password: "",
-      password_confirmation: "",
-      errors: [],
-    };
-  },
-  methods: {
-    checkPasswords: function () {
-      if (this.password == this.password_confirmation) {
-        return true;
-      } return false;
-    },
-
-    register: function() {
-      this.errors = [];
-      if (this.checkPasswords()) {
-        let data = {
-          username: this.name,
-          email: this.email,
-          password: this.password,
-        };
-        this.$store
-          .dispatch("register", data)
-          .then(() => this.$router.push("/"))
-          .catch(err => console.error(err));
-      } else {
-        let error = "Passwords are not the same"
-        this.errors.push(error);
-      };
-    }
-  }
+export default {
+data() {
+  return {
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+    errors: [],
   };
+},
+methods: {
+  checkPasswords: function () {
+    if (this.password == this.password_confirmation) {
+      return true;
+    } return false;
+  },
+
+  register: function() {
+    this.errors = [];
+    if (this.checkPasswords()) {
+      let data = {
+        username: this.name,
+        email: this.email,
+        password: this.password,
+      };
+      this.$store
+        .dispatch("register", data)
+        .then(() => this.$router.push("/"))
+        .catch(err => console.error(err));
+    } else {
+      let error = "Passwords are not the same"
+      this.errors.push(error);
+    };
+  }
+}
+};
 </script>
 
 <style lang="scss" scoped>
