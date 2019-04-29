@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="locations" class="locations">
-      <div v-for="location in locations" class="location">
+      <div v-for="location in locations" :key="location.id" class="location">
         <p @click="moveToFightView($event)" :id="location.id">{{ location.name }}</p>
         <p>{{ location.description }}</p>
       </div>
