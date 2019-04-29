@@ -30,11 +30,6 @@ export default new Router({
       component: () => import('./views/user/Login.vue'),
     },
     {
-      path: '/resources',
-      name: 'resources',
-      component: () => import('./views/Resources.vue'),
-    },
-    {
       path: '/hero/create',
       name: 'hero/create',
       component: () => import('./views/hero/CreateHero.vue'),

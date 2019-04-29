@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="locations" class="locations">
-      <div v-for="location in locations" class="location">
+      <div v-for="location in locations" :key="location.id" class="location">
         <p @click="moveToFightView($event)" :id="location.id">{{ location.name }}</p>
         <p>{{ location.description }}</p>
       </div>
@@ -26,7 +26,7 @@
       this.$http
         .get(`${this.$store.state.url}artifical/location/`)
         .then(response => (this.locations = response.data))
-        .catch(error => (console.log(error)));
+        .catch(error => (console.error(error)));
     },
     moveToFightView: function(event ) {
       const location = this.findLocation(parseInt(event.originalTarget.id));
