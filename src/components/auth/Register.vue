@@ -58,7 +58,7 @@
         this.$store
           .dispatch("register", data)
           .then(() => this.$router.push("/"))
-          .catch(err => console.log(err));
+          .catch(err => console.error(err));
       } else {
         let error = "Passwords are not the same"
         this.errors.push(error);

@@ -26,7 +26,7 @@
       this.$http
         .get(`${this.$store.state.url}artifical/location/`)
         .then(response => (this.locations = response.data))
-        .catch(error => (console.log(error)));
+        .catch(error => (console.error(error)));
     },
     moveToFightView: function(event ) {
       const location = this.findLocation(parseInt(event.originalTarget.id));
