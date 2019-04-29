@@ -3,7 +3,7 @@
     <p v-if="fighter.info" class="name">
       {{ fighter.info.name}}
     </p>
-    <div v-for="statistic in fighter.mainStatistics" class="statistic">
+    <div v-for="statistic in fighter.mainStatistics" :key="statistic.id" class="statistic">
       <p>{{ statistic.name }}: {{ statistic.points}}</p>
     </div>
     <div v-if="fighter.derivativeStatistics" class="statistic">
@@ -26,9 +26,9 @@ export default {
   },
 
   sockets: {
-    
+
   },
-  
+
   mounted() {
 
   },
