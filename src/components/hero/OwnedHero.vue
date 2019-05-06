@@ -1,7 +1,7 @@
 <template>
   <div v-if="hero">
     <div v-if="errors" class="errors">
-      <span v-for="error in errors">{{ error }}</span>
+      <span v-for="error in errors" :key="error">{{ error }}</span>
     </div>
 
     <HeroDetails :parentData="getDataToHeroDetailsComponent()" />
