@@ -40,6 +40,11 @@ export default new Router({
       component: () => import('./views/hero/OwnedHero.vue'),
     },
     {
+      path: '/hero/equipment',
+      name: 'hero/equipment',
+      component: () => import('./views/hero/EquipmentView.vue'),
+    },
+    {
       path: '/expedition',
       name: 'expedition',
       component: () => import('./views/artifical/LocationListView.vue'),
